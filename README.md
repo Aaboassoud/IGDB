@@ -4,7 +4,7 @@
 The Internet Game Database is (IGDb) , an online database that contains information and statistics about video games as well as developers and other game industry professionals.
 
 ## Inspiration:
-for people who loves games, They need to have a platform that talks about games in detail, but in Arabic
+for people who loves games, They need to have a platform that talks about games in detail
 
 
 ## List of Services / Features:
