@@ -3,8 +3,8 @@ from rest_framework.request import Request
 from rest_framework.response import Response
 from rest_framework import status
 from django.contrib.auth.models import User
-from .models import Comment, Rating
-from models import Games
+from .models import Comment, Ratings
+from GamesApp.models import Games
 from .serializers import CommentSerializer, RatingSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from rest_framework.permissions import IsAuthenticated
@@ -95,7 +95,7 @@ def add_rating(request: Request, game_id):
 @api_view(['GET'])
 def rating_comment(request : Request,game_id):
 
-    ratings_comments = Rating.objects.filter(game=game_id)
+    ratings_comments = Ratings.objects.filter(game=game_id)
     dataResponse = {
         "msg" : "List of All Ratings Comments",
         "Ratings Comments" : CommentSerializer(instance=ratings_comments, many=True).data
@@ -111,7 +111,7 @@ def delete_rating(request: Request, rating_id):
         This function to delete a rating and must be authenticated.
     '''
     user:User = request.user
-    rating = Rating.objects.get(id=rating_id) 
+    rating = Ratings.objects.get(id=rating_id) 
     if not user.is_authenticated or user.id != rating.user:
         return Response({"msg" : "Not Allowed"}, status=status.HTTP_401_UNAUTHORIZED)
 

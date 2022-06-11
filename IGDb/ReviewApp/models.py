@@ -8,8 +8,8 @@ class Comment(models.Model):
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     game = models.ForeignKey(Games, on_delete=models.CASCADE)
 
-class Rating(models.Model):
+class Ratings(models.Model):
     comment = models.TextField()
-    rating = models.DecimalField(digits=3, decimal_places=1)
+    rating = models.DecimalField(max_digits=3, decimal_places=1)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
     game = models.ForeignKey(Games, on_delete=models.CASCADE)
