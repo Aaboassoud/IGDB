@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'GamesApp',
     'ReviewApp',
+    'accounts'
 ]
 
 MIDDLEWARE = [
@@ -129,5 +130,7 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
+#AUTH_USER_MODEL = 'accounts.CustomUser'
+
 SIMPLE_JWT = {
-'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),}
+'ACCESS_TOKEN_LIFETIME': timedelta(days=1),}
