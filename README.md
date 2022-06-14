@@ -10,42 +10,45 @@ for people who loves games, They need to have a platform that talks about games 
 ## List of Services / Features:
 
 - Manage the Games.
+- Manage the Ratings.
+- Manage the Comments.
 - Manage the Devolpers.
-- Manage the Reviews.
 - Manage Users who have experience in games.
 
 
 ## User Stories
-- Type of users: Normal users, Developer , Gamers(depends on trophies in PSN), Admins.
+- Type of users: Normal users, Developers , Gamers{"this will be in the future" : (depends on trophies in PSN)}, Admins.
 
 ### Admin
 
 - Create, Read, Update, Delete Games.
 - Create, Read, Update, Delete Developer.
 - Create, Read, Update, Delete Gamers.
-- Create, Read, Update, Delete Critics.
 - Create, Read, Update, Delete Normal Users.
+- Create, Read, Update, Delete Ratings.
+- Create, Read, Update, Delete Comments.
+- Create, Read, Update, Delete Wishlists.
 
 ### Developer
 
 - Create, Read, Update, Delete Games (Added by this Developer).
-- View the information of all users.
 - Add Review and comments to another developer games.
 - Edit personal informations.
-- Search for Games, Developer and Critics.
+- Add games to wishlist.
+- Search for Games.
 
 ### Gamers
 
 - View Games.
-- View the information of all users.
 - Add Review and comments to games.
 - Edit personal informations.
+- Add games to wishlist.
 - Search for Games.
 
 ### Normal User
 
 - View Games.
-- Comments on games.
-- View review of Critics, Devolper and Gamers.
+- Add Comments on games.
 - Edit personal informations.
+- Add games to wishlist.
 - Search for Games.

@@ -1,4 +1,3 @@
-from decimal import Decimal
 from django.db.models import Avg
 from rest_framework.decorators import api_view, authentication_classes, permission_classes
 from rest_framework.request import Request
@@ -41,7 +40,10 @@ def add_comment(request: Request, game_id):
 
 @api_view(['GET'])
 def reviews(request : Request, game_id):
-
+    ''' 
+    description
+    this function to show a list of reviews
+    '''
     comments = Comment.objects.filter(game=game_id)
     dataResponse = {
         "msg" : "List of All Comments",
@@ -56,7 +58,7 @@ def reviews(request : Request, game_id):
 def delete_comment(request: Request, comment_id):
     '''
         description
-        This function to delete a comment and must be authenticated.
+        This function to delete a comment and must be authenticated and only the same user who created this comment.
     '''
     user:User = request.user
     comment = Comment.objects.get(id=comment_id) 
@@ -71,43 +73,53 @@ def delete_comment(request: Request, comment_id):
 @permission_classes([IsAuthenticated])
 def add_rating(request: Request, game_id):
     ''' description
-        This function to add a new rating to the database and must be authenticated and have permission to add rating.
+        This function to add a new rating to a game and must be authenticated and have permission to add rating.
+        and updating the average rating for the game
     '''
     user:User = request.user
 
     if not user.is_authenticated or not request.user.has_perm('ReviewApp.add_ratings'):
         return Response({"msg" : "Not Allowed"}, status=status.HTTP_401_UNAUTHORIZED)
-    
+    if Games.objects.filter(user=request.user.id).exists() :
+        return Response({"msg" : "Not Allowed, you cannot add rating for your own game"}, status=status.HTTP_401_UNAUTHORIZED)
     game1 = Games.objects.get(id=game_id)
     request.data.update(user=request.user.id, game=game1.id)
-
-    new_rate = RatingSerializer(data=request.data)
-    if new_rate.is_valid():
-        new_rate.save()
-
-        rating = Ratings.objects.filter(game=game1.id).aggregate(Avg('rating'))
-        rating = "%.1f" % rating.get('rating__avg')
-        game1.rating=rating
-        game1.save()
-
-        dataResponse = {
-            "msg" : "Created Successfully",
-            "Ratings" : new_rate.data
-        }
-        return Response(dataResponse)
+    if Ratings.objects.filter(game=game1.id, user=request.user.id).exists() :
+        print('you already have added rating for this game')
+        dataResponse = {"msg" : "you already have added rating for this game"}
+        return Response( dataResponse, status=status.HTTP_208_ALREADY_REPORTED)            
     else:
-        print(new_rate.errors)
-        dataResponse = {"msg" : "couldn't create a Rating"}
-        return Response( dataResponse, status=status.HTTP_400_BAD_REQUEST)
+        new_rate = RatingSerializer(data=request.data)
+        if new_rate.is_valid():
+            new_rate.save()
+
+            rating = Ratings.objects.filter(game=game1.id).aggregate(Avg('rating'))
+            rating = "%.1f" % rating.get('rating__avg')
+            game1.rating=rating
+            game1.save()
+
+            dataResponse = {
+                "msg" : "Created Successfully",
+                "Ratings" : new_rate.data
+            }
+            return Response(dataResponse)
+        else:
+            print(new_rate.errors)
+            dataResponse = {"msg" : "couldn't create a Rating"}
+            return Response( dataResponse, status=status.HTTP_400_BAD_REQUEST)
+        
 
 
 @api_view(['GET'])
 def rating(request : Request,game_id):
-
-    ratings_comments = Ratings.objects.filter(game=game_id)
+    ''' 
+    description
+    this function to show ratings, it's useless!!
+    '''
+    ratings = Ratings.objects.filter(game=game_id)
     dataResponse = {
         "msg" : "List of All Ratings",
-        "Ratings Comments" : RatingSerializerView(instance=ratings_comments, many=True).data
+        "Ratings Comments" : RatingSerializerView(instance=ratings, many=True).data
     }
     return Response(dataResponse)
 
@@ -117,7 +129,7 @@ def rating(request : Request,game_id):
 def delete_rating(request: Request, rating_id):
     '''
         description
-        This function to delete a rating and must be authenticated.
+        This function to delete a rating and must be authenticated and only the same user who created.
     '''
     user:User = request.user
     rating = Ratings.objects.get(id=rating_id) 
@@ -129,7 +141,11 @@ def delete_rating(request: Request, rating_id):
 
 @api_view(['GET'])
 def update_rating(request: Request):
-    objects = Games.objects.filter(id)
+    ''' 
+    description
+    this function to update all ratings average by its self , when it called , and it will be called every time to navigate to list of games
+    '''
+    objects = Games.objects.all()
     for obj in objects:
         obj1 = Ratings.objects.filter(game=obj.id).aggregate(Avg('rating'))
         rating = "%.1f" % obj1.get('rating__avg')

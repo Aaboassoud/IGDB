@@ -1,5 +1,6 @@
-from django.contrib.auth.models import AbstractUser
+from django.contrib.auth.models import User
 from django.db import models
 
-'''class CustomUser(AbstractUser):
-    trophies = models.PositiveIntegerField(default=0)'''
+class UserExtension(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE, primary_key=True)
+    trophies = models.IntegerField()

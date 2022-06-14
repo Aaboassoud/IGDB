@@ -38,6 +38,11 @@ def add_game(request: Request):
 
 @api_view(['GET'])
 def all_games(request : Request):
+    '''
+    description:
+    This function to show all games from the database.
+    and have a search field as a query_params
+    '''
     if 'search' in request.query_params:
         search_phrase = request.query_params['search']
         games = Games.objects.filter(game_title__contains=search_phrase)
@@ -55,10 +60,12 @@ def all_games(request : Request):
 
 @api_view(['GET'])
 def all_gamers(request : Request):
-
+    ''' 
+    description
+    this function to show the list of all gamers so the normal user can follow them, 'but not at this moment' :) .
+    '''
     gamers = User.objects.filter(groups__name = "Developer")
     gamers_json = serializers.serialize('json', gamers)
-    print(gamers.username,"WOW!!!")
     dataResponse = {
         "msg" : "List of All games",
         "games" : ""
@@ -72,7 +79,7 @@ def all_gamers(request : Request):
 def edit_game(request : Request, game_id):
     '''
         description
-        This function to update a game and must be authenticated and have permission to update the game.
+        This function to update a game and must be authenticated and have permission to update the game and only the same user who created this game.
     '''
     user:User = request.user
     if not user.is_authenticated or not request.user.has_perm('GamesApp.change_games'):
@@ -81,7 +88,7 @@ def edit_game(request : Request, game_id):
     game = Games.objects.get(id=game_id)
 
     if user != game.user:
-        return Response({"msg" : "Not Allowed"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"msg" : "Not Allowed, You must be the onwner of this game"}, status=status.HTTP_401_UNAUTHORIZED)
 
     request.data.update(user=request.user.id)
     updated_game = GamesSerializer(instance=game, data=request.data)
@@ -103,12 +110,12 @@ def edit_game(request : Request, game_id):
 def delete_game(request: Request, game_id):
     '''
         description
-        This function to delete a game and must be authenticated and have permission to delete the game.
+        This function to delete a game and must be authenticated and have permission to delete the game and only the same use who created this game.
     '''
     user:User = request.user
     game = Games.objects.get(id=game_id) 
     if not user.is_authenticated or not request.user.has_perm('GamesApp.delete_games') or user != game.user:
-        return Response({"msg" : "Not Allowed, You must have permission to delete"}, status=status.HTTP_401_UNAUTHORIZED)
+        return Response({"msg" : "Not Allowed, You must have permission to delete and the owner of this game"}, status=status.HTTP_401_UNAUTHORIZED)
 
     game.delete()
     return Response({"msg" : "Deleted Successfully"})
@@ -141,6 +148,10 @@ def add_to_wishlist(request: Request, game_id):
 @api_view(['GET'])
 @authentication_classes([JWTAuthentication])
 def wishlist(request: Request):
+    ''' 
+    description
+    this function to show all wishlist for a user
+    '''
     user:User = request.user
     if not user.is_authenticated:
         return Response({"msg" : "Not Allowed"}, status=status.HTTP_401_UNAUTHORIZED)
