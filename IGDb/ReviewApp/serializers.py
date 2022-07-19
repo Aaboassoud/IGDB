@@ -13,7 +13,7 @@ class CommentSerializer(serializers.ModelSerializer):
 class GamesSerializerView(serializers.ModelSerializer):
     class Meta:
         model = Games
-        fields = ['game_title',]
+        fields = ['game_title','image','rating']
 
 class CommentSerializerView(serializers.ModelSerializer):
     user = UserSerializerView()

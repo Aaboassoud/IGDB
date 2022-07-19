@@ -7,7 +7,7 @@ class GamesAdmin(admin.ModelAdmin):
     this class to customize the admin interface
     
     '''
-    list_display = ('game_title', 'company', 'rating', 'date_realeased')
+    list_display = ('game_title', 'company', 'rating', 'date_realeased', 'id')
     list_filter = ('company', 'rating')
     search_fields = ('game_title__contains',)
     date_hierarchy = 'date_realeased'
