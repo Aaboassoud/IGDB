@@ -50,7 +50,7 @@ def all_games(request : Request):
         game_phrase = request.query_params['game']
         games = Games.objects.filter(id=game_phrase)
     else:
-        games = Games.objects.all()
+        games = Games.objects.all().order_by('game_title')
     
     dataResponse = {
         "msg" : "List of All games",
