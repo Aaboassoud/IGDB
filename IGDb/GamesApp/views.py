@@ -57,6 +57,22 @@ def all_games(request : Request):
     return Response(dataResponse)
 
 
+@api_view(['GET'])
+def game_details(request : Request, game_id):
+    '''
+    description:
+    This function to show 1 game from the database.
+    and have a search field as a query_params
+    '''
+    game = Games.objects.filter(id=game_id)
+    
+    dataResponse = {
+        "msg" : "List game details",
+        "games" : GamesSerializerView(instance=game, many=True).data
+    }
+
+    return Response(dataResponse)
+
 
 @api_view(['GET'])
 def all_gamers(request : Request):
@@ -127,10 +143,11 @@ def add_to_wishlist(request: Request, game_id):
     to add a game to wishlist
     '''
     user:User = request.user
+    game1 = Games.objects.get(id=game_id)
     if not user.is_authenticated:
         return Response({"msg" : "Not Allowed"}, status=status.HTTP_401_UNAUTHORIZED)
-
-    game1 = Games.objects.get(id=game_id)
+    if Wishlist.objects.filter(user=request.user.id , game=game1).exists():
+        return Response({"msg" : "you already have added this game to wish list"}, status=status.HTTP_400_BAD_REQUEST)
     request.data.update(user=request.user.id, game=game1.id)
     wishlist = WishListSerializer(data=request.data)
     if wishlist.is_valid():
@@ -163,3 +180,21 @@ def wishlist(request: Request):
     }
 
     return Response(dataResponse)
+
+
+@api_view(['DELETE'])
+@authentication_classes([JWTAuthentication])
+@permission_classes([IsAuthenticated])
+def remove_from_wishlist(request: Request, game_id):
+    '''
+        description
+        This function to delete a game from wishlist.
+    '''
+    user:User = request.user
+    game = Wishlist.objects.get(id=game_id) 
+    if not user.is_authenticated:
+        return Response({"msg" : "Not Allowed, You must be the owner of this wihslist"}, status=status.HTTP_401_UNAUTHORIZED)
+    if Wishlist.objects.filter(user=request.user.id).exists() :
+        game.delete()
+
+    return Response({"msg" : "Deleted Successfully"})

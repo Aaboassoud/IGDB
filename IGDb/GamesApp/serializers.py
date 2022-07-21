@@ -33,4 +33,4 @@ class WishListSerializerView(serializers.ModelSerializer):
     game = GamesSerializerView()
     class Meta:
         model = Wishlist
-        fields = ['game',]
+        fields = ['game','id']

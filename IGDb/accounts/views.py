@@ -77,7 +77,7 @@ def personal_info(request: Request):
     
     responseData = {
         "msg" : "My Personal Information",
-        "games" : UserInfoSerializerView(instance=user_info).data
+        "Information" : UserInfoSerializerView(instance=user_info).data
     }
 
     return Response(responseData)
