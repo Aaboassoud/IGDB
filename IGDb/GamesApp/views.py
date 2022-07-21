@@ -46,6 +46,9 @@ def all_games(request : Request):
     if 'search' in request.query_params:
         search_phrase = request.query_params['search']
         games = Games.objects.filter(game_title__contains=search_phrase)
+    elif 'game' in request.query_params:
+        game_phrase = request.query_params['game']
+        games = Games.objects.filter(id=game_phrase)
     else:
         games = Games.objects.all()
     
